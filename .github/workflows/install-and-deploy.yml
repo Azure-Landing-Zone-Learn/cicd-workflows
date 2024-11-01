@@ -37,6 +37,6 @@ jobs:
 
       - name: Verify SSH Key
         run: |
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no tung@40.85.121.87 << 'EOF'
+          ssh -vvv -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no tung@40.85.121.87 << 'EOF'
             echo "SSH Connection Successful"
           EOF
