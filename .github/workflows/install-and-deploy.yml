@@ -33,8 +33,7 @@ jobs:
           export $(grep -v '^#' .env | xargs)
 
       - name: Set up SSH
-        run: |
-          ./scripts/setup-ssh.sh
+        run: ./scripts/setup-ssh.sh
 
       - name: SSH to VM, Install Docker and Azure CLI, Deploy Container
         env:
