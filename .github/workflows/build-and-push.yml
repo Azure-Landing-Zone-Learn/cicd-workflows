@@ -9,11 +9,12 @@ on:
       IMAGE_NAME:
         required: true
         type: string
-
-env:
-  ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
-  AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
-
+      ACR_LOGIN_SERVER: 
+        required: true
+        type: string
+      AZURE_CREDENTIALS:  
+        required: true
+        type: string
 
 jobs:
   build-and-push:
@@ -26,7 +27,7 @@ jobs:
       - name: Log in to Azure
         uses: azure/login@v1
         with:
-          creds: env.AZURE_CREDENTIALS
+          creds: ${{ inputs.AZURE_CREDENTIALS }} 
 
       - name: Log in to Azure Container Registry (ACR)
         run: |
@@ -34,11 +35,11 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build . -t ${{ env.ACR_LOGIN_SERVER }}/${{ inputs.IMAGE_NAME }}:${{ github.sha }}
+          docker build . -t ${{ inputs.ACR_LOGIN_SERVER }}/${{ inputs.IMAGE_NAME }}:${{ github.sha }}
 
       - name: Push Docker image to ACR
         run: |
-          docker push ${{ env.ACR_LOGIN_SERVER }}/${{ inputs.IMAGE_NAME }}:${{ github.sha }}
+          docker push ${{ inputs.ACR_LOGIN_SERVER }}/${{ inputs.IMAGE_NAME }}:${{ github.sha }}
 
       - name: List Docker images in ACR
         run: |
