@@ -35,10 +35,6 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H 40.85.121.87 >> ~/.ssh/known_hosts
 
-      - name: Verify Private Key
-        run: |
-          ssh-keygen -y -f ~/.ssh/id_rsa
-
       - name: Verify SSH Key
         run: |
           ssh -vvv -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no tung@40.85.121.87 << 'EOF'
