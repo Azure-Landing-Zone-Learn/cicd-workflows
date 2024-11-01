@@ -45,6 +45,10 @@ jobs:
           echo "SSH key length: $(wc -c < ~/.ssh/id_rsa) characters"
           ls -la ~/.ssh  # List files in the SSH directory for debugging
 
+          # Fetch the host key and add it to known_hosts
+          ssh-keyscan -H 40.85.121.87 >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
       - name: SSH to VM, Install Docker and Azure CLI, Deploy Container
         env:
           ACR_NAME: ${{ inputs.ACR_NAME }}
