@@ -1,15 +1,23 @@
 name: SSH to VM, Install Docker, and Deploy Container
 
 on:
-  push:
-    branches:
-      - main
-
-env:
-  ACR_NAME: publicacrdmsnortheurope
-  IMAGE_NAME: gettodo
-  ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
-  UBUNTU_VERSION: "22.04"
+  workflow_call:  # This makes the workflow reusable
+    inputs:
+      ACR_NAME:
+        required: true
+        type: string
+      IMAGE_NAME:
+        required: true
+        type: string
+      ACR_LOGIN_SERVER:
+        required: true
+        type: string
+      GITHUB_SHA:
+        required: true
+        type: string
+      UBUNTU_VERSION:
+        required: true
+        type: string
 
 jobs:
   install-and-deploy:
@@ -24,11 +32,11 @@ jobs:
 
       - name: SSH to VM, Install Docker and Azure CLI, Deploy Container
         env:
-          ACR_NAME: ${{ env.ACR_NAME }}
-          ACR_LOGIN_SERVER: ${{ env.ACR_LOGIN_SERVER }}
-          IMAGE_NAME: ${{ env.IMAGE_NAME }}
-          GITHUB_SHA: ${{ github.sha }}
-          UBUNTU_VERSION: ${{ env.UBUNTU_VERSION }}
+          ACR_NAME: ${{ inputs.ACR_NAME }}
+          ACR_LOGIN_SERVER: ${{ inputs.ACR_LOGIN_SERVER }}
+          IMAGE_NAME: ${{ inputs.IMAGE_NAME }}
+          GITHUB_SHA: ${{ inputs.GITHUB_SHA }}
+          UBUNTU_VERSION: ${{ inputs.UBUNTU_VERSION }}
         run: |
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no tung@$VM_IP << EOF
             # Run Docker and Azure CLI installation, pass Ubuntu version as an argument
