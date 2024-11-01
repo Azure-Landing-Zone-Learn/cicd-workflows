@@ -36,7 +36,22 @@ jobs:
           export $(grep -v '^#' .env | xargs)
 
       - name: Set up SSH
-        run: ./scripts/setup-ssh.sh
+        run: |
+          # Load environment variables from .env file
+          set -o allexport
+          source .env
+          set +o allexport
+
+          # Ensure the SSH directory exists
+          mkdir -p ~/.ssh
+
+          # Save the SSH private key from the environment variable and secure it
+          echo "${{ env.VM_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+          # Add the firewall’s public IP to known hosts to avoid SSH prompt
+          ssh-keyscan -H "${{ env.FW_IP }}" >> ~/.ssh/known_hosts
+
 
       - name: SSH to VM, Install Docker and Azure CLI, Deploy Container
         env:
@@ -48,7 +63,33 @@ jobs:
           FW_IP: ${{ env.FW_IP }}
         run: |
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no tung@$FW_IP << EOF
-            ./scripts/install-docker-azcli-\$UBUNTU_VERSION.sh 
+            # Update package list and install Docker if not already installed
+            if ! command -v docker &> /dev/null; then
+              echo "Docker not found, installing..."
+              # Add Docker’s official GPG key
+              curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+              # Set up the stable Docker repository
+              sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+              sudo apt-get update
+              # Install Docker
+              sudo apt install -y docker-ce
+              # Start and enable Docker to start on boot
+              sudo systemctl start docker
+              sudo systemctl enable docker
+              echo "Docker installed successfully."
+            else
+              echo "Docker is already installed."
+            fi
+
+            # Install Azure CLI if not already installed
+            if ! command -v az &> /dev/null; then
+              echo "Azure CLI not found, installing..."
+              # Run the Azure CLI installation script
+              curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+              echo "Azure CLI installed successfully."
+            else
+              echo "Azure CLI is already installed."
+            fi
             
             sudo az acr login --name \$ACR_NAME
             sudo docker pull \$ACR_LOGIN_SERVER/\$IMAGE_NAME:\$GITHUB_SHA
