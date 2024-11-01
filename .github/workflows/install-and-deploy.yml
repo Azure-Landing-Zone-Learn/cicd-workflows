@@ -54,7 +54,7 @@ jobs:
           UBUNTU_VERSION: ${{ inputs.UBUNTU_VERSION }}
         run: |
           echo "Attempting SSH to ${FW_IP}"
-          ssh -v -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o IdentitiesOnly=yes tung@40.85.121.87 << EOF
+          ssh -v -i ~/.ssh/id_rsa tung@40.85.121.87 << EOF
             # Update package list and install Docker if not already installed
             if ! command -v docker &> /dev/null; then
               echo "Docker not found, installing..."
