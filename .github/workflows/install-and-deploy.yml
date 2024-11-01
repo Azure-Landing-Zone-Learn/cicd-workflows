@@ -45,6 +45,6 @@ jobs:
         run: |
           ssh-keygen -y -f /home/runner/.ssh/vm_ssh_key
           echo "Attempting SSH to 40.85.121.87"
-          ssh -i /home/runner/.ssh/vm_ssh_key tung@40.85.121.87 << EOF
+          ssh -i /home/runner/.ssh/vm_ssh_key -o StrictHostKeyChecking=no tung@40.85.121.87 << 'EOF'
             echo "SSH Connection Successful"
           EOF
