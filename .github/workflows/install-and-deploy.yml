@@ -45,9 +45,6 @@ jobs:
           echo "SSH key length: $(wc -c < ~/.ssh/id_rsa) characters"
           ls -la ~/.ssh  # List files in the SSH directory for debugging
 
-          # Add the firewall’s public IP to known hosts to avoid SSH prompt
-          ssh-keyscan -H "${{ secrets.FW_IP }}" >> ~/.ssh/known_hosts
-
       - name: SSH to VM, Install Docker and Azure CLI, Deploy Container
         env:
           ACR_NAME: ${{ inputs.ACR_NAME }}
