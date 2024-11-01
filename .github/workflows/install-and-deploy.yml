@@ -32,6 +32,7 @@ jobs:
         run: |
           mkdir -p /home/runner/.ssh/
           echo "${{ secrets.VM_SSH_KEY }}" > /home/runner/.ssh/vm_ssh_key
+          cat /home/runner/.ssh/vm_ssh_key
           chmod 600 /home/runner/.ssh/vm_ssh_key
           echo "SSH Key has been written to /home/runner/.ssh/vm_ssh_key with permissions:"
           ls -l /home/runner/.ssh/vm_ssh_key
