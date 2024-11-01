@@ -37,16 +37,11 @@ jobs:
 
       - name: Set up SSH
         run: |
-          # Load environment variables from .env file
-          set -o allexport
-          source env/.env
-          set +o allexport
-
           # Ensure the SSH directory exists
           mkdir -p ~/.ssh
 
           # Save the SSH private key from the environment variable and secure it
-          echo "${{ env.VM_SSH_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.VM_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
           # Add the firewall’s public IP to known hosts to avoid SSH prompt
