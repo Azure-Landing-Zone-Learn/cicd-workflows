@@ -1,7 +1,7 @@
 name: SSH to VM, Install Docker, and Deploy Container
 
 on:
-  workflow_call:  # This makes the workflow reusable
+  workflow_call:
     inputs:
       ACR_NAME:
         required: true
@@ -34,64 +34,16 @@ jobs:
 
       - name: Set up SSH
         run: |
-          # Ensure the SSH directory exists
           mkdir -p ~/.ssh
-
-          # Save the SSH private key from the environment variable and secure it
           echo "${{ secrets.VM_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-
-          # Debugging: Check the length of the SSH key to confirm it has been set
-          echo "SSH key length: $(wc -c < ~/.ssh/id_rsa) characters"
-          ls -la ~/.ssh  # List files in the SSH directory for debugging
-
-          # Fetch the host key and add it to known_hosts
           ssh-keyscan -H 40.85.121.87 >> ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
 
-      - name: SSH to VM, Install Docker and Azure CLI, Deploy Container
-        env:
-          ACR_NAME: ${{ inputs.ACR_NAME }}
-          ACR_LOGIN_SERVER: ${{ inputs.ACR_LOGIN_SERVER }}
-          IMAGE_NAME: ${{ inputs.IMAGE_NAME }}
-          GITHUB_SHA: ${{ inputs.GITHUB_SHA }}
-          UBUNTU_VERSION: ${{ inputs.UBUNTU_VERSION }}
+      - name: Verify SSH Key
         run: |
-          echo "Attempting SSH to ${FW_IP}"
-          chmod 600 ~/.ssh/id_rsa
-          ssh -v -i ~/.ssh/id_rsa tung@40.85.121.87 << EOF
-            # Update package list and install Docker if not already installed
-            if ! command -v docker &> /dev/null; then
-              echo "Docker not found, installing..."
-              # Add Docker’s official GPG key
-              curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-              # Set up the stable Docker repository
-              sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu \$(lsb_release -cs) stable"
-              sudo apt-get update
-              # Install Docker
-              sudo apt install -y docker-ce
-              # Start and enable Docker to start on boot
-              sudo systemctl start docker
-              sudo systemctl enable docker
-              echo "Docker installed successfully."
-            else
-              echo "Docker is already installed."
-            fi
-
-            # Install Azure CLI if not already installed
-            if ! command -v az &> /dev/null; then
-              echo "Azure CLI not found, installing..."
-              # Run the Azure CLI installation script
-              curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-              echo "Azure CLI installed successfully."
-            else
-              echo "Azure CLI is already installed."
-            fi
-            
-            sudo az acr login --name \$ACR_NAME
-            sudo docker pull \$ACR_LOGIN_SERVER/\$IMAGE_NAME:\$GITHUB_SHA
-
-            sudo docker stop my_container || true
-            sudo docker rm my_container || true
-            sudo docker run -d --name my_container -p 80:80 \$ACR_LOGIN_SERVER/\$IMAGE_NAME:\$GITHUB_SHA
+          ssh-keygen -y -f ~/.ssh/id_rsa
+          echo "Attempting SSH to 40.85.121.87"
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o IdentitiesOnly=yes tung@40.85.121.87 << EOF
+            echo "SSH Connection Successful"
           EOF
