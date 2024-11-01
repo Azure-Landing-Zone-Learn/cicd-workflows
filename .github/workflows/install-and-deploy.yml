@@ -19,9 +19,6 @@ on:
         required: true
         type: string
         default: "22.04"
-    secrets:
-      VM_SSH_KEY:
-        required: true
 
 jobs:
   install-and-deploy:
