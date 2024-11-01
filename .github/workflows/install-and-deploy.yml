@@ -18,6 +18,7 @@ on:
       UBUNTU_VERSION:
         required: true
         type: string
+        default: "22.04"
 
 jobs:
   install-and-deploy:
