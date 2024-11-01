@@ -28,10 +28,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Load .env variables
-        run: |
-          export $(grep -v '^#' .env | xargs)
-
       - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
