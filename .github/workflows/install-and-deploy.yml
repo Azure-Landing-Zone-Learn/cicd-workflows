@@ -30,16 +30,16 @@ jobs:
 
       - name: Set up SSH
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.VM_SSH_KEY }}" > ~/.ssh/vm_ssh_key
-          chmod 600 ~/.ssh/vm_ssh_key
-          ssh-keyscan -H 40.85.121.87 >> ~/.ssh/known_hosts
-          chmod 644 ~/.ssh/known_hosts
+          mkdir -p /home/runner/.ssh/
+          echo "${{ secrets.VM_SSH_KEY }}" > /home/runner/.ssh/vm_ssh_key
+          chmod 600 /home/runner/.ssh/vm_ssh_key
+          ssh-keyscan -H 40.85.121.87 >> /home/runner/.ssh/known_hosts
+          chmod 644 /home/runner/.ssh/known_hosts
 
       - name: Verify SSH Key
         run: |
-          ssh-keygen -y -f ~/.ssh/vm_ssh_key
+          ssh-keygen -y -f /home/runner/.ssh/vm_ssh_key
           echo "Attempting SSH to 40.85.121.87"
-          ssh -t -i ~/.ssh/vm_ssh_key tung@40.85.121.87 << EOF
+          ssh -t -i/home/runner/.ssh/vm_ssh_key tung@40.85.121.87 << EOF
             echo "SSH Connection Successful"
           EOF
