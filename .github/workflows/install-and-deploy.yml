@@ -45,7 +45,7 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
 
           # Add the firewall’s public IP to known hosts to avoid SSH prompt
-          ssh-keyscan -H "${{ env.FW_IP }}" >> ~/.ssh/known_hosts
+          ssh-keyscan -H "${{ secrets.FW_IP }}" >> ~/.ssh/known_hosts
 
 
       - name: SSH to VM, Install Docker and Azure CLI, Deploy Container
@@ -55,7 +55,7 @@ jobs:
           IMAGE_NAME: ${{ inputs.IMAGE_NAME }}
           GITHUB_SHA: ${{ inputs.GITHUB_SHA }}
           UBUNTU_VERSION: ${{ inputs.UBUNTU_VERSION }}
-          FW_IP: ${{ env.FW_IP }}
+          FW_IP: ${{ secrets.FW_IP }}
         run: |
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no tung@$FW_IP << EOF
             # Update package list and install Docker if not already installed
