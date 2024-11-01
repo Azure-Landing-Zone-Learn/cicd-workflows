@@ -28,6 +28,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Load .env variables
+        run: |
+          export $(grep -v '^#' .env | xargs)
+
       - name: Set up SSH
         run: |
           ./scripts/setup-ssh.sh
@@ -39,8 +43,9 @@ jobs:
           IMAGE_NAME: ${{ inputs.IMAGE_NAME }}
           GITHUB_SHA: ${{ inputs.GITHUB_SHA }}
           UBUNTU_VERSION: ${{ inputs.UBUNTU_VERSION }}
+          FW_IP: ${{ env.FW_IP }}
         run: |
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no tung@$VM_IP << EOF
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no tung@$FW_IP << EOF
             ./scripts/install-docker-azcli-\$UBUNTU_VERSION.sh 
             
             sudo az acr login --name \$ACR_NAME
