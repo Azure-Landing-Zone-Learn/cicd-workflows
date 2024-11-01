@@ -1,0 +1,45 @@
+name: SSH to VM, Install Docker, and Deploy Container
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  ACR_NAME: publicacrdmsnortheurope
+  IMAGE_NAME: gettodo
+  ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
+  UBUNTU_VERSION: "22.04"
+
+jobs:
+  install-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up SSH
+        run: ./scripts/setup-ssh.sh
+
+      - name: SSH to VM, Install Docker and Azure CLI, Deploy Container
+        env:
+          ACR_NAME: ${{ env.ACR_NAME }}
+          ACR_LOGIN_SERVER: ${{ env.ACR_LOGIN_SERVER }}
+          IMAGE_NAME: ${{ env.IMAGE_NAME }}
+          GITHUB_SHA: ${{ github.sha }}
+          UBUNTU_VERSION: ${{ env.UBUNTU_VERSION }}
+        run: |
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no tung@$VM_IP << EOF
+            # Run Docker and Azure CLI installation, pass Ubuntu version as an argument
+            ./scripts/install-docker-azcli-\$UBUNTU_VERSION.sh 
+            
+            # Pull the latest Docker image and deploy container
+            sudo az acr login --name \$ACR_NAME
+            sudo docker pull \$ACR_LOGIN_SERVER/\$IMAGE_NAME:\$GITHUB_SHA
+
+            # Stop any existing container and run the new container
+            sudo docker stop my_container || true
+            sudo docker rm my_container || true
+            sudo docker run -d --name my_container -p 80:80 \$ACR_LOGIN_SERVER/\$IMAGE_NAME:\$GITHUB_SHA
+          EOF
