@@ -28,9 +28,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
       - name: Load .env variables
         run: |
           export $(grep -v '^#' .env | xargs)
@@ -45,7 +42,7 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
 
           # Add the firewall’s public IP to known hosts to avoid SSH prompt
-          ssh-keyscan -H "${{ secrets.FW_IP }}" >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.FW_IP }} >> ~/.ssh/known_hosts
 
 
       - name: SSH to VM, Install Docker and Azure CLI, Deploy Container
