@@ -42,7 +42,8 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
 
           # Add the firewall’s public IP to known hosts to avoid SSH prompt
-          ssh-keyscan -H ${{ secrets.FW_IP }} >> ~/.ssh/known_hosts
+          echo "Adding ${{ secrets.FW_IP }} to known hosts"
+          ssh-keyscan -H "${{ secrets.FW_IP }}" >> ~/.ssh/known_hosts
 
 
       - name: SSH to VM, Install Docker and Azure CLI, Deploy Container
