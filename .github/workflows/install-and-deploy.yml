@@ -48,9 +48,8 @@ jobs:
           IMAGE_NAME: ${{ inputs.IMAGE_NAME }}
           GITHUB_SHA: ${{ inputs.GITHUB_SHA }}
           UBUNTU_VERSION: ${{ inputs.UBUNTU_VERSION }}
-          FW_IP: ${{ secrets.FW_IP }}
         run: |
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no tung@$FW_IP
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no tung@${{ secrets.FW_IP }} << EOF
             # Update package list and install Docker if not already installed
             if ! command -v docker &> /dev/null; then
               echo "Docker not found, installing..."
