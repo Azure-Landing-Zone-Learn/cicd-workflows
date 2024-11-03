@@ -19,7 +19,7 @@ jobs:
 
     steps:
       - name: Azure Login
-        uses: ./.github/actions/az-login.yml
+        uses: ./.github/actions/az-login
         with:
           azure_credentials: ${{ secrets.AZURE_CREDENTIALS }}
 
