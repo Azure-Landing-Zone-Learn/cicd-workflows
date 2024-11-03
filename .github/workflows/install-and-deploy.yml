@@ -12,13 +12,6 @@ on:
       ACR_LOGIN_SERVER:
         required: true
         type: string
-      GITHUB_SHA:
-        required: true
-        type: string
-      UBUNTU_VERSION:
-        required: true
-        type: string
-        default: "22.04"
 
 jobs:
   install-and-deploy:
