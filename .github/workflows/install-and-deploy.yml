@@ -1,33 +1,42 @@
-name: SSH to VM, Install Docker, and Deploy Container
+name: Trigger CI/CD Workflows
 
 on:
-  workflow_call:
-    inputs:
-      ACR_NAME:
-        required: true
-        type: string
-      IMAGE_NAME:
-        required: true
-        type: string
-      ACR_LOGIN_SERVER:
-        required: true
-        type: string
+  push:
+    branches:
+      - main
 
 jobs:
-  install-and-deploy:
+  trigger-build-and-push:
+    uses: Azure-Landing-Zone-Learn/cicd-workflows/.github/workflows/build-and-push.yml@main
+    with:
+      ACR_NAME: publicacrdmsnortheurope
+      IMAGE_NAME: gettodo
+      ACR_LOGIN_SERVER: publicacrdmsnortheurope.azurecr.io
+    secrets: inherit
+
+  trigger-install-and-deploy:
+    needs: trigger-build-and-push
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Check out the repository
+        uses: actions/checkout@v2
 
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.azure_credentials }}
+      - name: Verify script existence
+        run: |
+          echo "Listing files in the scripts directory:"
+          ls -la ./scripts
+          echo "Checking if deploy_acr_image.sh exists:"
+          if [ -f ./scripts/deploy_acr_image.sh ]; then
+            echo "Script found."
+          else
+            echo "Script not found!"
+            exit 1
+          fi
 
       - name: Run Deploy Script
         run: |
+          echo "Running the deploy script..."
           az vm run-command invoke \
             --resource-group rg-dms-northeurope-001 \
             --vm-name vm-be-get-dms-northeurope \
