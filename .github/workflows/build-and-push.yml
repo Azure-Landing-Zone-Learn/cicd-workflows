@@ -20,7 +20,7 @@ jobs:
     steps:
 
       - name: azure-login
-        uses: ./.github/jobs/az-login.yml
+        uses: Azure-Landing-Zone-Learn/cicd-workflows/.github/jobs/az-login.yml
         with:
           azure_credentials: ${{ secrets.AZURE_CREDENTIALS }}
 
