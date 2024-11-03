@@ -15,9 +15,12 @@ on:
 
 jobs:
   azure-login:
-    uses: Azure-Landing-Zone-Learn/cicd-workflows/.github/workflows/az-login.yml@main
-    with:
-      azure_credentials: ${{ secrets.AZURE_CREDENTIALS }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Azure Login
+        uses: ./.github/actions/az-login 
+        with:
+          azure_credentials: ${{ secrets.AZURE_CREDENTIALS }}
 
   build-and-push:
     runs-on: ubuntu-latest
