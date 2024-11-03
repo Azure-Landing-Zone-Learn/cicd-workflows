@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Azure Login
-        uses: ./.github/actions/az-login
+        uses: Azure-Landing-Zone-Learn/cicd-workflows/.github/actions/az-login/az-login@main
         with:
           azure_credentials: ${{ secrets.AZURE_CREDENTIALS }}
 
