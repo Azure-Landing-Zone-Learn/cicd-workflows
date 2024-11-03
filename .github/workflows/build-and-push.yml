@@ -15,7 +15,7 @@ on:
 
 jobs:
   azure-login:
-    uses: Azure-Landing-Zone-Learn/cicd-workflows/.github/workflows/az-login.yml@main
+    uses: Azure-Landing-Zone-Learn/cicd-workflows/.github/jobs/az-login.yml@main
     with:
       azure_credentials: ${{ secrets.AZURE_CREDENTIALS }}
 
