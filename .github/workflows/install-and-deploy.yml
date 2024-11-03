@@ -28,20 +28,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.VM_SSH_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H 40.69.63.96>> ~/.ssh/known_hosts
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.azure_credentials }}
 
-      - name: Print Derived Public Key
+      - name: Execute deployment script on Azure VM
+        env:
+          ACR_NAME: publicacrdmsnortheurope
+          ACR_LOGIN_SERVER: publicacrdmsnortheurope.azurecr.io
+          IMAGE_NAME: gettodo
+          IMAGE_TAG: latest
+          CONTAINER_NAME: my_container
         run: |
-          echo "Derived public key:"
-          ssh-keygen -y -f ~/.ssh/id_rsa
-
-      - name: Verify SSH Key
-        run: |
-          ssh -vvv -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no tung@40.69.63.96<< 'EOF'
-            echo "SSH Connection Successful"
-          EOF
+          az vm run-command invoke --resource-group rg-dms-northeurope-001 --vm-name vm-be-get-dms-northeurope --command-id RunShellScript --scripts "bash -s" < scripts/deploy_acr_image.sh
