@@ -9,22 +9,26 @@ on:
       IMAGE_NAME:
         required: true
         type: string
-      ACR_LOGIN_SERVER: 
+      ACR_LOGIN_SERVER:
         required: true
         type: string
 
 jobs:
   azure-login:
     runs-on: ubuntu-latest
+
     steps:
+      - name: Check out the repository
+        uses: actions/checkout@v3
+
       - name: Azure Login
-        uses: ./.github/actions/az-login.yml
+        uses: ./.github/actions/az-login  # Calls the local action
         with:
           azure_credentials: ${{ secrets.AZURE_CREDENTIALS }}
 
   build-and-push:
     runs-on: ubuntu-latest
-    needs: azure-login 
+    needs: azure-login
 
     steps:
       - name: Log in to Azure Container Registry (ACR)
