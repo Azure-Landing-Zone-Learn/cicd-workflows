@@ -33,7 +33,7 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.VM_SSH_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H 40.85.121.87 >> ~/.ssh/known_hosts
+          ssh-keyscan -H 40.69.63.96>> ~/.ssh/known_hosts
 
       - name: Print Derived Public Key
         run: |
@@ -42,6 +42,6 @@ jobs:
 
       - name: Verify SSH Key
         run: |
-          ssh -vvv -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no tung@40.85.121.87 << 'EOF'
+          ssh -vvv -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no tung@40.69.63.96<< 'EOF'
             echo "SSH Connection Successful"
           EOF

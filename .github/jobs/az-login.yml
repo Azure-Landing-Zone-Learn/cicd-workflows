@@ -1,0 +1,21 @@
+name: Azure Login
+
+on:
+  workflow_call:
+    inputs:
+      azure_credentials:
+        description: "Azure credentials JSON"
+        required: true
+        type: string
+
+jobs:
+  checkout-and-login:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ inputs.azure_credentials }}
