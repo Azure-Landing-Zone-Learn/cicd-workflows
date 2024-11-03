@@ -12,6 +12,9 @@ on:
       ACR_LOGIN_SERVER:
         required: true
         type: string
+      FILE_PATH:
+        required: true
+        type: string
 
 jobs:
   install-and-deploy:
@@ -32,7 +35,7 @@ jobs:
             --resource-group rg-dms-northeurope-001 \
             --vm-name vm-be-get-dms-northeurope \
             --command-id RunShellScript \
-            --scripts "bash -s" < ./deploy_acr_image.sh
+            --scripts "bash -s" < ${{ inputs.FILE_PATH }}
         env:
           ACR_NAME: publicacrdmsnortheurope
           ACR_LOGIN_SERVER: publicacrdmsnortheurope.azurecr.io
