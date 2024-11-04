@@ -17,6 +17,12 @@ jobs:
   install-and-deploy:
     runs-on: ubuntu-latest
 
+    env:
+      CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -93,6 +99,6 @@ jobs:
           ACR_NAME: ${{ inputs.ACR_NAME }}
           ACR_LOGIN_SERVER: ${{ inputs.ACR_LOGIN_SERVER }}
           IMAGE_NAME: ${{ inputs.IMAGE_NAME }}
-          CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-          TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          CLIENT_ID: env.CLIENT_ID
+          CLIENT_SECRET: env.CLIENT_SECRET
+          TENANT_ID: env.TENENAT_ID
