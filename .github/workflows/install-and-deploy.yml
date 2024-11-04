@@ -60,20 +60,20 @@ jobs:
               fi
 
               # Azure CLI Login
-              az login --service-principal -u "${CLIENT_ID}" -p "${CLIENT_SECRET}" --tenant "${TENANT_ID}"
+              az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET --tenant $TENANT_ID
 
               # ACR Login
-              sudo az acr login --name "${ACR_NAME}"
+              sudo az acr login --name $ACR_NAME
 
               # Docker Pull Image
-              sudo docker pull "${ACR_LOGIN_SERVER}/${IMAGE_NAME}:latest"
+              sudo docker pull $ACR_LOGIN_SERVER/$IMAGE_NAME:latest
 
               # Stop and Remove any existing container
               sudo docker stop my_container || true
               sudo docker rm my_container || true
 
               # Run new container
-              sudo docker run -d --name my_container -p 80:80 "${ACR_LOGIN_SERVER}/${IMAGE_NAME}:latest"
+              sudo docker run -d --name my_container -p 80:80 $ACR_LOGIN_SERVER/$IMAGE_NAME:latest
 
               # Check if the container is running
               if [ -z "$(docker ps -a -q --filter name=my_container)" ]; then
