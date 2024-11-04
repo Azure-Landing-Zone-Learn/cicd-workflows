@@ -59,6 +59,11 @@ jobs:
                 echo "Azure CLI is already installed."
               fi
 
+              echo "Client ID: $CLIENT_ID"
+              echo "ACR Name: $ACR_NAME"
+              echo "Image Name: $IMAGE_NAME"
+              echo "Login Server: $ACR_LOGIN_SERVER"
+
               # Azure CLI Login
               az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET --tenant $TENANT_ID
 
