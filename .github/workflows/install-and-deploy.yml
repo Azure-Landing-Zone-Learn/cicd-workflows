@@ -58,17 +58,17 @@ jobs:
               sudo chmod -R 700 ~/.azure
               sudo chown -R $USER ~/.azure
               az login --service-principal -u $ClIENT_ID -p $CLIENT_SECRET --tenant $TENANT_ID
-              az acr login --name $ACR_NAME
+              sudo az acr login --name $ACR_NAME
 
               # Pull the Docker image from ACR
-              docker pull $ACR_LOGIN_SERVER/$IMAGE_NAME:latest
+              sudo docker pull $ACR_LOGIN_SERVER/$IMAGE_NAME:latest
 
               # Stop and remove any existing container
-              docker stop my_container || true
-              docker rm my_container || true
+              sudo docker stop my_container || true
+              sudo docker rm my_container || true
 
               # Run the new container
-              docker run -d --name my_container -p 80:80 $ACR_LOGIN_SERVER/$IMAGE_NAME:latest
+              sudo docker run -d --name my_container -p 80:80 $ACR_LOGIN_SERVER/$IMAGE_NAME:latest
             ' 
         env:
           ACR_NAME: ${{ inputs.ACR_NAME }}
