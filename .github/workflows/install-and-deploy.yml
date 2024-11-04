@@ -26,16 +26,51 @@ jobs:
         with:
           creds: ${{ secrets.azure_credentials }}
 
-      - name: Run Deploy Script
+      - name: Run Deployment Commands on VM
         run: |
           az vm run-command invoke \
             --resource-group rg-dms-northeurope-001 \
-            --vm-name vm-be-get-dms-northeurope \
+            --name vm-be-get-dms-northeurope \
             --command-id RunShellScript \
-            --scripts "bash -s" < cicd-workflows/deploy-acr-image.sh
+            --scripts '
+              # Update packages and install Docker if not installed
+              if ! command -v docker &> /dev/null; then
+                echo "Docker not found, installing..."
+                curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+                sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+                sudo apt-get update
+                sudo apt install -y docker-ce
+                sudo systemctl start docker
+                sudo systemctl enable docker
+              else
+                echo "Docker is already installed."
+              fi
+
+              # Install Azure CLI if not already installed
+              if ! command -v az &> /dev/null; then
+                echo "Azure CLI not found, installing..."
+                curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+              else
+                echo "Azure CLI is already installed."
+              fi
+
+              # Login to Azure and ACR
+              az login --identity
+              az acr login --name $ACR_NAME
+
+              # Pull the Docker image from ACR
+              docker pull $ACR_LOGIN_SERVER/$IMAGE_NAME:latest
+
+              # Stop and remove any existing container
+              docker stop my_container || true
+              docker rm my_container || true
+
+              # Run the new container
+              docker run -d --name my_container -p 80:80 $ACR_LOGIN_SERVER/$IMAGE_NAME:latest
+            ' 
         env:
-          ACR_NAME: publicacrdmsnortheurope
-          ACR_LOGIN_SERVER: publicacrdmsnortheurope.azurecr.io
-          IMAGE_NAME: gettodo
+          ACR_NAME: ${{ inputs.ACR_NAME }}
+          ACR_LOGIN_SERVER: ${{ inputs.ACR_LOGIN_SERVER }}
+          IMAGE_NAME: ${{ inputs.IMAGE_NAME }}
           IMAGE_TAG: latest
           CONTAINER_NAME: my_container
