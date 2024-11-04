@@ -15,11 +15,15 @@ on:
       GITHUB_SHA:
         required: true
         type: string
+      VM_NAME:
+        required: true
+        type: string
 
 env:
   CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
   CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
   TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  VM_NAME: ${{ inputs.VM_NAME }}
 
 jobs:
   install-and-deploy:
@@ -38,7 +42,7 @@ jobs:
         run: |
           az vm run-command invoke \
             --resource-group rg-dms-northeurope-001 \
-            --name vm-be-get-dms-northeurope \
+            --name $VM_NAME \
             --command-id RunShellScript \
             --scripts '
               set -x
