@@ -33,6 +33,9 @@ jobs:
             --name vm-be-get-dms-northeurope \
             --command-id RunShellScript \
             --scripts '
+              # Enable debug mode to print each command as it runs
+              set -x
+
               # Update packages and install Docker if not installed
               if ! command -v docker &> /dev/null; then
                 echo "Docker not found, installing..."
@@ -57,7 +60,7 @@ jobs:
               # Login to Azure and ACR
               sudo chmod -R 700 ~/.azure
               sudo chown -R $USER ~/.azure
-              az login --service-principal -u $ClIENT_ID -p $CLIENT_SECRET --tenant $TENANT_ID
+              az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET --tenant $TENANT_ID
               sudo az acr login --name $ACR_NAME
 
               # Pull the Docker image from ACR
@@ -69,6 +72,15 @@ jobs:
 
               # Run the new container
               sudo docker run -d --name my_container -p 80:80 $ACR_LOGIN_SERVER/$IMAGE_NAME:latest
+
+              # Check if the container is running
+              if [ -z "$(docker ps -a -q --filter name=my_container)" ]; then
+                echo "Error: No containers are running."
+                exit 1
+              else
+                echo "Container my_container is running successfully."
+                docker ps -a
+              fi
             ' 
         env:
           ACR_NAME: ${{ inputs.ACR_NAME }}
