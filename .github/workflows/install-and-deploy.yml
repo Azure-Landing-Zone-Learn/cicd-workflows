@@ -13,13 +13,13 @@ on:
         required: true
         type: string
 
-    env:
-      CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-      TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      ACR_NAME: ${{ inputs.ACR_NAME }}
-      ACR_LOGIN_SERVER: ${{ inputs.ACR_LOGIN_SERVER }}
-      IMAGE_NAME: ${{ inputs.IMAGE_NAME }}
+env:
+  CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+  TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  ACR_NAME: ${{ inputs.ACR_NAME }}
+  ACR_LOGIN_SERVER: ${{ inputs.ACR_LOGIN_SERVER }}
+  IMAGE_NAME: ${{ inputs.IMAGE_NAME }}
 
 jobs:
   install-and-deploy:
