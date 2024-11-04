@@ -55,7 +55,9 @@ jobs:
               fi
 
               # Login to Azure and ACR
-              az login --identity
+              sudo chmod -R 700 ~/.azure
+              sudo chown -R $USER ~/.azure
+              az login --service-principal -u $ClIENT_ID -p $CLIENT_SECRET --tenant $TENANT_ID
               az acr login --name $ACR_NAME
 
               # Pull the Docker image from ACR
@@ -74,3 +76,6 @@ jobs:
           IMAGE_NAME: ${{ inputs.IMAGE_NAME }}
           IMAGE_TAG: latest
           CONTAINER_NAME: my_container
+          CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
