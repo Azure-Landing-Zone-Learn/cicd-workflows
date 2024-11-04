@@ -12,6 +12,9 @@ on:
       ACR_LOGIN_SERVER:
         required: true
         type: string
+      GITHUB_SHA:
+        required: true
+        type: string
 
 env:
   CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -47,6 +50,7 @@ jobs:
               ACR_NAME="${{ inputs.ACR_NAME }}"
               ACR_LOGIN_SERVER="${{ inputs.ACR_LOGIN_SERVER }}"
               IMAGE_NAME="${{ inputs.IMAGE_NAME }}"
+              GITHUB_SHA="${{ inputs.GITHUB_SHA }}"
 
               # Create .azure directory if it does not exist
               mkdir -p ~/.azure
@@ -84,14 +88,14 @@ jobs:
               sudo az acr login --name $ACR_NAME
 
               # Docker Pull Image
-              sudo docker pull $ACR_LOGIN_SERVER/$IMAGE_NAME:latest
+              sudo docker pull $ACR_LOGIN_SERVER/$IMAGE_NAME:$GITHUB_SHA
 
               # Stop and Remove any existing container
               sudo docker stop my_container || true
               sudo docker rm my_container || true
 
               # Run new container
-              sudo docker run -d --name my_container -p 80:80 $ACR_LOGIN_SERVER/$IMAGE_NAME:latest
+              sudo docker run -d --name my_container -p 80:80 $ACR_LOGIN_SERVER/$IMAGE_NAME:$GITHUB_SHA
 
               # Check if the container is running
               if [ -z "$(docker ps -a -q --filter name=my_container)" ]; then
