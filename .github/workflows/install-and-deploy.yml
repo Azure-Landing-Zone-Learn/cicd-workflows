@@ -101,4 +101,4 @@ jobs:
                 docker ps -a
               fi
             ' \
-            --parameters "${{ secrets.AZURE_CLIENT_ID }}" "${{ secrets.AZURE_CLIENT_SECRET }}" "${{ inputs.ACR_NAME }}" "${{ inputs.ACR_LOGIN_SERVER }}" "${{ inputs.IMAGE_NAME }}"
+            --parameters "CLIENT_ID=$CLIENT_ID" "CLIENT_SECRET=$CLIENT_SECRET" "ACR_NAME=$ACR_NAME" "ACR_LOGIN_SERVER=$ACR_LOGIN_SERVER" "IMAGE_NAME=$IMAGE_NAME"
