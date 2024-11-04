@@ -20,6 +20,7 @@ env:
   ACR_NAME: ${{ inputs.ACR_NAME }}
   ACR_LOGIN_SERVER: ${{ inputs.ACR_LOGIN_SERVER }}
   IMAGE_NAME: ${{ inputs.IMAGE_NAME }}
+  AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
 
 jobs:
   install-and-deploy:
@@ -32,7 +33,7 @@ jobs:
       - name: Azure Login
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.azure_credentials }}
+          creds: $AZURE_CREDENTIALS
 
       - name: Run Deployment Commands on VM
         run: |
