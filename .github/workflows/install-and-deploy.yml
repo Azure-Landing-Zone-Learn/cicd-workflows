@@ -17,10 +17,6 @@ env:
   CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
   CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
   TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-  ACR_NAME: ${{ inputs.ACR_NAME }}
-  ACR_LOGIN_SERVER: ${{ inputs.ACR_LOGIN_SERVER }}
-  IMAGE_NAME: ${{ inputs.IMAGE_NAME }}
-  AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
 
 jobs:
   install-and-deploy:
@@ -33,7 +29,7 @@ jobs:
       - name: Azure Login
         uses: azure/login@v1
         with:
-          creds: $AZURE_CREDENTIALS
+          creds: ${{ secrets.azure_credentials }}
 
       - name: Run Deployment Commands on VM
         run: |
@@ -43,6 +39,13 @@ jobs:
             --command-id RunShellScript \
             --scripts '
               set -x
+
+              # Get the environment variables from the parameters
+              CLIENT_ID="${1}"
+              CLIENT_SECRET="${2}"
+              ACR_NAME="${3}"
+              ACR_LOGIN_SERVER="${4}"
+              IMAGE_NAME="${5}"
 
               # Create .azure directory if it does not exist
               mkdir -p ~/.azure
@@ -97,4 +100,5 @@ jobs:
                 echo "Container my_container is running successfully."
                 docker ps -a
               fi
-            ' 
+            ' \
+            --parameters "${{ secrets.AZURE_CLIENT_ID }}" "${{ secrets.AZURE_CLIENT_SECRET }}" "${{ inputs.ACR_NAME }}" "${{ inputs.ACR_LOGIN_SERVER }}" "${{ inputs.IMAGE_NAME }}"
