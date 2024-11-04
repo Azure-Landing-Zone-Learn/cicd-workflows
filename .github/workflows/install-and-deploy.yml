@@ -40,12 +40,13 @@ jobs:
             --scripts '
               set -x
 
-              # Get the environment variables from the parameters
-              CLIENT_ID="${1}"
-              CLIENT_SECRET="${2}"
-              ACR_NAME="${3}"
-              ACR_LOGIN_SERVER="${4}"
-              IMAGE_NAME="${5}"
+              # Define the environment variables directly
+              CLIENT_ID="${{ secrets.AZURE_CLIENT_ID }}"
+              CLIENT_SECRET="${{ secrets.AZURE_CLIENT_SECRET }}"
+              TENANT_ID="${{ secrets.AZURE_TENANT_ID }}"
+              ACR_NAME="${{ inputs.ACR_NAME }}"
+              ACR_LOGIN_SERVER="${{ inputs.ACR_LOGIN_SERVER }}"
+              IMAGE_NAME="${{ inputs.IMAGE_NAME }}"
 
               # Create .azure directory if it does not exist
               mkdir -p ~/.azure
@@ -100,5 +101,4 @@ jobs:
                 echo "Container my_container is running successfully."
                 docker ps -a
               fi
-            ' \
-            --parameters "CLIENT_ID=$CLIENT_ID" "CLIENT_SECRET=$CLIENT_SECRET" "ACR_NAME=$ACR_NAME" "ACR_LOGIN_SERVER=$ACR_LOGIN_SERVER" "IMAGE_NAME=$IMAGE_NAME"
+            '
